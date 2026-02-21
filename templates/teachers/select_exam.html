@@ -1,0 +1,213 @@
+{% extends 'tbase.html' %}
+
+{% block title %}Set Exam{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Select Exam Details</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                <li class="breadcrumb-item active">Select Exam</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- সিলেকশন ফর্ম কার্ড -->
+    <div class="card p-4 shadow-sm mb-5 border-0 bg-white">
+        <form method="get" action="{% url 'setexam_redirect' %}">
+            <div class="row">
+                <!-- College (Readonly) -->
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">College:</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-building"></i></span>
+                        <input type="text" class="form-control bg-light" value="{{ college.name }}" readonly>
+                    </div>
+                </div>
+
+                <!-- Department -->
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Department:</label>
+                    <select id="department" name="department" class="form-select border-primary" required>
+                        <option value="">Select Department</option>
+                        {% for dept in departments %}
+                            <option value="{{ dept }}">{{ dept }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Year -->
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Year:</label>
+                    <select id="year" name="year" class="form-select border-primary" required disabled>
+                        <option value="">Select Year</option>
+                    </select>
+                </div>
+
+                <!-- Subject -->
+                <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Subject:</label>
+                    <select id="subject" name="subject" class="form-select border-primary" required disabled>
+                        <option value="">Select Subject</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-2">
+                <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                    <i class="bi bi-plus-circle me-2"></i>Go to Set Exam
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ইতিহাস টেবিল কার্ড -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>History of Created Question Papers</h5>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-primary me-2">College: {{ college.name }}</span>
+                <span class="badge bg-info text-dark">Teacher: {{ user.username }}</span>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Paper Title</th>
+                            <th>College</th>
+                            <th>Subject & Details</th>
+                            <th>Created By</th>
+                            <th class="text-end pe-4">Date & Time / Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for paper in past_papers %}
+                        <tr>
+                            <td class="ps-4">
+                                <span class="fw-bold text-dark d-block">{{ paper.title|default:"Untitled Paper" }}</span>
+                                <small class="text-muted">ID: #{{ paper.id }}</small>
+                                <div class="mt-1">
+                                    <span class="badge {% if paper.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {% if paper.is_active %}Active{% else %}Not started{% endif %}
+                                    </span>
+                                    <span class="ms-1 small text-muted">Questions: {{ paper.questions.count }}</span>
+                                </div>
+                            </td>
+
+                            <td><span class="text-secondary">{{ college.name }}</span></td>
+
+                            <td>
+                                <div class="fw-bold">{{ paper.dept_year_subject.subject.name }}</div>
+                                <div class="small text-muted">
+                                    {{ paper.dept_year_subject.department }} | Year {{ paper.dept_year_subject.year }}
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-xs bg-soft-primary text-primary me-2 text-center">
+                                        {{ paper.created_by.username|first|upper }}
+                                    </div>
+                                    <span>{{ paper.created_by.username }}</span>
+                                </div>
+                            </td>
+
+                            <td class="text-end pe-4">
+                                <div class="fw-bold">{{ paper.created_at|date:"d M, Y" }}</div>
+                                <div class="small text-muted">{{ paper.created_at|date:"h:i A" }}</div>
+
+                                <!-- Actions: Start / View / Edit -->
+                                <div class="mt-2 d-flex justify-content-end align-items-center">
+                                    <!-- Start Exam form (POST) -->
+                                    <form method="post" action="{% url 'start_exam' paper.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        {% if not paper.is_active and paper.questions.count > 0 %}
+                                            <button type="submit" class="btn btn-sm btn-success me-1"
+                                                    onclick="return confirm('Start exam now? Students will be able to access it.');">
+                                                <i class="bi bi-play-fill"></i> Start Exam
+                                            </button>
+                                        {% elif paper.is_active %}
+                                            <button type="button" class="btn btn-sm btn-secondary me-1" disabled>
+                                                <i class="bi bi-check-circle"></i> Started
+                                            </button>
+                                        {% else %}
+                                            <button type="button" class="btn btn-sm btn-outline-secondary me-1" disabled>
+                                                <i class="bi bi-exclamation-circle"></i> No Questions
+                                            </button>
+                                        {% endif %}
+                                    </form>
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-5">
+                                <i class="bi bi-file-earmark-plus d-block mb-2 fs-2"></i>
+                                No question papers created yet. Start by selecting details above.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- স্ক্রিপ্ট অংশ (department/year/subject selection) -->
+<script>
+    const rawData = {{ dys_list_json | safe }};
+    const departmentSelect = document.getElementById('department');
+    const yearSelect = document.getElementById('year');
+    const subjectSelect = document.getElementById('subject');
+
+    // Map data to a simpler structure
+    const data = rawData.map(d => ({
+        dys_id: d.id,
+        department: d.department,
+        year: d.year,
+        subject_id: d.subject__id,
+        subject_name: d.subject__name
+    }));
+
+    departmentSelect.addEventListener('change', function() {
+        yearSelect.innerHTML = '<option value="">Select Year</option>';
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        yearSelect.disabled = true;
+        subjectSelect.disabled = true;
+
+        const selectedDept = this.value;
+        if (!selectedDept) return;
+
+        const years = [...new Set(data.filter(d => d.department === selectedDept).map(d => d.year))];
+        years.forEach(y => {
+            const option = document.createElement('option');
+            option.value = y;
+            option.textContent = 'Year ' + y;
+            yearSelect.appendChild(option);
+        });
+        yearSelect.disabled = false;
+    });
+
+    yearSelect.addEventListener('change', function() {
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        const selectedDept = departmentSelect.value;
+        const selectedYear = this.value;
+        if (!selectedYear) return;
+
+        const subjects = data.filter(d => d.department === selectedDept && String(d.year) === String(selectedYear));
+        subjects.forEach(s => {
+            const option = document.createElement('option');
+            option.value = s.dys_id; // DYS id for redirect
+            option.textContent = s.subject_name;
+            subjectSelect.appendChild(option);
+        });
+        subjectSelect.disabled = false;
+    });
+</script>
+{% endblock %}

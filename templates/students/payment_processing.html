@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Payment</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="processing-page">
+    <div class="processing-card">
+        <h2>Payment Processed</h2>
+        <p>Your fee payment has been initiated successfully.</p>
+        <a href="{% url 'fee_payments' %}" class="btn btn-outline-primary">Back to Fee Payments</a>
+    </div>
+</body>
+</html>

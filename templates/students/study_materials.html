@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Study Materials{% endblock %}
+
+{% block content %}
+<div class="page-container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <h2>📚 Study Materials</h2>
+        <p>All available learning resources for students</p>
+    </div>
+
+    {% if documents %}
+    <div class="card">
+        <div class="table-wrapper">
+            <table class="custom-table">
+
+                <thead>
+                    <tr>
+                        <th>SL</th>
+                        <th>Material Title</th>
+                        <th>Subject</th>
+                        <th>Description</th>
+                        <th>Uploaded Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for doc in documents %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+
+                        <td class="title-text">
+                            {{ doc.title }}
+                        </td>
+
+                        <td>
+                            <span class="subject-badge">
+                                {{ doc.subject.code }} - {{ doc.subject.name }}
+                            </span>
+                        </td>
+
+                        <td class="description-text">
+                            {{ doc.description }}
+                        </td>
+
+                        <td>
+                            {{ doc.uploaded_at|date:"d M Y" }}
+                        </td>
+
+                        <td>
+                            <a href="{{ doc.file.url }}"
+                               target="_blank"
+                               class="download-btn">
+                               Download
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="empty-box">
+        No study materials available at the moment.
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+

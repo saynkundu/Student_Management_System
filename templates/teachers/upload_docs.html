@@ -1,0 +1,104 @@
+{% extends 'tbase.html' %}
+
+{% block title %}Upload Document{% endblock %}
+
+{% block content %}
+    <h2>Upload Documents</h2>
+
+<div class="card">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <input type="text" name="title" placeholder="Title">
+
+        <textarea name="description" placeholder="Description"></textarea>
+
+        <!-- Department -->
+        <select name="department" id="department">
+            <option value="">Select Department</option>
+            <option value="CSE">CSE</option>
+            <option value="IT">IT</option>
+            <option value="AIML">AIML</option>
+        </select>
+
+        <!-- Year -->
+        <select name="year" id="year">
+            <option value="">Select Year</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+        </select>
+
+        <!-- Subject Dropdown (NEW) -->
+        <select name="subject" id="subject">
+            <option value="">Select Subject</option>
+        </select>
+
+        <input type="file" name="file" accept=".pdf">
+
+        <button type="submit">Upload</button>
+    </form>
+</div>
+
+<hr>
+<h3>Your Uploaded Documents</h3>
+
+{% if user_documents %}
+<div class="table-responsive">
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Department</th>
+        <th>Year</th>
+        <th>Subject</th>
+        <th>File</th>
+        <th>Date</th>
+    </tr>
+
+    {% for doc in user_documents %}
+    <tr>
+        <td>{{ doc.title }}</td>
+        <td>{{ doc.department }}</td>
+        <td>{{ doc.year }}</td>
+        <td>{{ doc.subject.code }} - {{ doc.subject.name }}</td>
+        <td>
+            <a href="{{ doc.file.url }}" target="_blank">View</a>
+        </td>
+        <td>{{ doc.uploaded_at }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+{% else %}
+<p>No documents uploaded yet.</p>
+{% endif %}
+
+<script>
+document.getElementById("department").addEventListener("change", loadSubjects);
+document.getElementById("year").addEventListener("change", loadSubjects);
+
+function loadSubjects() {
+    const department = document.getElementById("department").value;
+    const year = document.getElementById("year").value;
+    const subjectDropdown = document.getElementById("subject");
+
+    // Clear previous subjects
+    subjectDropdown.innerHTML = '<option value="">Select Subject</option>';
+
+    if (department && year) {
+        fetch(`/ajax/load-subjects/?department=${department}&year=${year}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(subject => {
+                    const option = document.createElement("option");
+                    option.value = subject.id;
+                    option.textContent = subject.name;
+                    subjectDropdown.appendChild(option);
+                });
+            });
+    }
+}
+</script>
+
+{% endblock %}

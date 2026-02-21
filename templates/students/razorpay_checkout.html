@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="payment-page">
+
+    <div class="payment-card">
+       <h2>Complete Your Payment</h2>
+    <p>Submit your fees securely via our payment gateway</p>
+        
+        <div class="amount-display">
+            <!-- জাভাস্ক্রিপ্ট দিয়ে এখানে টাকা দেখানো হবে -->
+            ₹ <span id="display-amount">0.00</span>
+        </div>
+
+        <button id="pay-btn">Pay Now</button>
+
+        <div class="secure-text">
+            🔒 SSL Secure & Encrypted Payment
+        </div>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+    // ১. পাইসকে রুপিতে রূপান্তর করে ডিসপ্লে করা
+    var amountInPaise = parseInt("{{ amount }}");
+    var amountInRupees = (amountInPaise / 100).toFixed(2);
+    document.getElementById("display-amount").innerText = amountInRupees;
+
+    var options = {
+        key: "{{ razorpay_key }}",
+        amount: "{{ amount }}",   // Razorpay এর জন্য এটা পাইসেই থাকবে
+        currency: "INR",
+        name: "Your Company Name",
+        description: "Payment for Fee",
+        order_id: "{{ order_id }}",
+
+        handler: function (response) {
+            fetch("{% url 'payment_success' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify(response)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    window.location.href = "{% url 'fee_payments' %}";
+                } else {
+                    alert("Payment verification failed");
+                }
+            });
+        },
+        theme: {
+            "color": "#3498db"
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+    document.getElementById("pay-btn").onclick = function(e){
+        rzp1.open();
+        e.preventDefault();
+    };
+    </script>
+</body>
+</html>
+
+

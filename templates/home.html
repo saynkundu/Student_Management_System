@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        /* পুরো পেজ সেটআপ */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            gap: 20px;
+        }
+
+        /* লিঙ্কের স্টাইল (বাটন হিসেবে) */
+        a {
+            text-decoration: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* স্টুডেন্ট লগইন বাটন */
+        a[href="user_login"] {
+            background-color: #3498db;
+            color: white;
+        }
+
+        /* টিচার লগইন বাটন */
+        a[href="teacher_login"] {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        /* হোভার ইফেক্ট (মাউস ধরলে) */
+        a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <a href="user_login">Student Login</a>
+    <a href="teacher_login">Teacher Login</a>
+</body>
+</html>

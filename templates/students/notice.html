@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Notice Board - KUT{% endblock %}
+
+{% block content %}
+    <div class="notice-header">
+        <h2><u>OFFICIAL NOTICE BOARD</u></h2>
+        <p>Total Notices: <b>{{ notices.count }}</b></p>
+    </div>
+
+    {% for n in notices %}
+    <table class="notice-table">
+        <tr>
+            <td class="notice-content-area">
+                <!-- Meta info -->
+                <div class="notice-meta">
+                    <span><small>Ref: KUT/NOT/2024/{{ n.id }}</small></span>
+                    <span><b>Date:</b> {{ n.created_at|date:"d M, Y" }}</span>
+                </div>
+
+                <!-- Title -->
+                <h2 class="notice-title">{{ n.title }}</h2>
+
+                <!-- Body -->
+                <div class="notice-body">
+                    {{ n.content|linebreaks }}
+                </div>
+
+                <!-- Signature -->
+                <div class="signature-section">
+                    <div class="signature-box">
+                        _______________________<br>
+                        <b>Registrar</b><br>
+                        <span>Kundu University of Technology</span><br>
+                        <small>West Bengal, India</small>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    {% endfor %}
+
+    {% if not notices %}
+        <center>
+            <p><i>No notices are available at this moment.</i></p>
+        </center>
+    {% endif %}
+{% endblock %}

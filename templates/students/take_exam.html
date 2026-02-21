@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Examination - {{ dys.subject.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="card shadow-sm border-0">
+        <!-- পরীক্ষার হেডার -->
+        <div class="card-header bg-primary text-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Subject: {{ dys.subject.name }}</h4>
+                <span class="badge bg-light text-dark">Total Questions: {{ questions.count }}</span>
+            </div>
+            <div class="small mt-1 opacity-75">
+                {{ student.college_name }} | {{ student.department }} | Year {{ student.year }}
+            </div>
+        </div>
+
+        <div class="card-body p-4 bg-light">
+            {# If view returns a result (optional) show it here #}
+            {% if result %}
+            <div class="alert alert-info text-center mb-4">
+                <h5 class="mb-1">Result</h5>
+                <p class="mb-0"><strong>Score:</strong> {{ result.obtained }} / {{ result.total }}</p>
+            </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'take_exam' dys.id %}">
+                {% csrf_token %}
+                {# Use a named submit so the view can detect intentional submission #}
+                {% for q in questions %}
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-dark">
+                            <span class="badge bg-secondary me-2">{{ forloop.counter }}</span>
+                            {{ q.text }}
+                        </h5>
+                        <hr>
+                        <div class="options-list mt-3">
+                            {% for opt in q.options.all %}
+                            <div class="form-check p-2 rounded hover-bg-light border mb-2">
+                                <input class="form-check-input ms-1" type="radio"
+                                       name="question_{{ q.id }}"
+                                       id="opt_{{ opt.id }}"
+                                       value="{{ opt.id }}">
+                                <label class="form-check-label ms-2 d-block w-100" for="opt_{{ opt.id }}">
+                                    {{ opt.text }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- সাবমিট সেকশন -->
+                <div class="d-grid gap-2 col-md-6 mx-auto mt-5">
+                    <button type="submit" name="submit_exam" class="btn btn-success btn-lg shadow">
+                        <i class="bi bi-check-circle me-2"></i>Finish and Submit Exam
+                    </button>
+                    <a href="{% url 'exam_list' %}" class="btn btn-outline-secondary" id="cancel-exam">Cancel and Go Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+/* Confirm cancel so user doesn't accidentally leave the exam */
+document.addEventListener('DOMContentLoaded', function () {
+    var cancelBtn = document.getElementById('cancel-exam');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function (e) {
+            if (!confirm('Are you sure you want to cancel? Your answers will not be saved.')) {
+                e.preventDefault();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

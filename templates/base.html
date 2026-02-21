@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Management{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+<header>
+    <h2>Smart Student Management System</h2>
+    <nav>
+        <a href="{% url 'dashboard' %}">Home</a>
+        <a href="{% url 'notices' %}">
+            Notices 
+            {% if new_notices_count > 0 %}
+                <span class="notice-count">({{ new_notices_count }})</span>
+            {% endif %}
+        </a>
+        <a href="{% url 'fee_payments' %}">Fees Payment</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+</header>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <p>© 2026 Smart Student System</p>
+</footer>
+
+</body>
+</html>

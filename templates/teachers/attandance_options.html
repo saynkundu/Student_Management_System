@@ -1,0 +1,11 @@
+{%extends 'tbase.html' %}
+
+{% block title %}Attendance options{% endblock %}
+
+{% block content %}
+<h2>Attendance Options</h2>
+<div class="attendance-links">
+    <a href="{% url 'view_attendance' %}">View Attendance</a>
+    <a href="{% url 'attandance' %}">Take Attendance</a>
+</div>
+{% endblock %}

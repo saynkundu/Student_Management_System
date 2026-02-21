@@ -1,0 +1,262 @@
+{% extends 'tbase.html' %}
+
+{% block title %}Set Exam - {{ dys.subject.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1 text-primary"><i class="bi bi-journal-text me-2"></i>Set MCQ Paper</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{% url 'select_exam' %}">Select Exam</a></li>
+                    <li class="breadcrumb-item active">{{ dys.subject.name }}</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-secondary p-2">{{ dys.department }}</span>
+            <span class="badge bg-dark p-2">Year {{ dys.year }}</span>
+        </div>
+    </div>
+
+    <hr>
+
+    {# STEP 1: Paper setup (title + number) #}
+    {% if not num_questions %}
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0"><i class="bi bi-gear-fill me-2"></i>Paper Configuration</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="paper_setup" value="1">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Paper Title</label>
+                            {{ paper_form.title }}
+                            {% if paper_form.title.errors %}
+                                <div class="text-danger small mt-1">{{ paper_form.title.errors }}</div>
+                            {% endif %}
+                            <small class="text-muted d-block mt-1">Example: Final Term Exam 2024</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Number of Questions</label>
+                            {{ paper_form.num_questions }}
+                            {% if paper_form.num_questions.errors %}
+                                <div class="text-danger small mt-1">{{ paper_form.num_questions.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-plus-square me-2"></i>Create Question Blocks
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    {# STEP 2: Question editor #}
+    <div class="alert alert-info d-flex justify-content-between align-items-center shadow-sm">
+        <div>
+            <h5 class="mb-0"><strong>Paper Title:</strong> {{ paper_title }}</h5>
+            <small class="text-muted">Subject: {{ dys.subject.name }} — {{ dys.department }} (Year {{ dys.year }})</small>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-light text-dark border p-2">Total: {{ num_questions }} Questions</span>
+            {% if paper %}
+                <a href="{% url 'paper_detail' paper.id %}" class="btn btn-outline-primary btn-sm ms-3">View Saved Paper</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <input type="hidden" name="num_questions" value="{{ num_questions }}">
+        <input type="hidden" id="paperTitleValue" value="{{ paper_title|default:'' }}">
+
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <button type="button" id="openGeneratePanel" class="btn btn-outline-primary">
+                        <i class="bi bi-magic me-2"></i>Generate
+                    </button>
+                    <small class="text-muted">Auto-create all questions and options with AI, then review and edit.</small>
+                </div>
+
+                <div id="generatePanel" class="mt-3 d-none">
+                    <label for="aiTopic" class="form-label fw-bold">Topic for AI Question Generation</label>
+                    <textarea id="aiTopic" class="form-control" rows="2" placeholder="Example: Object Oriented Programming in Python"></textarea>
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        <button type="button" id="generateWithAiBtn" class="btn btn-primary">
+                            <i class="bi bi-stars me-2"></i>Generate with AI
+                        </button>
+                        <button type="button" id="cancelGeneratePanel" class="btn btn-outline-secondary">Cancel</button>
+                    </div>
+                    <div id="aiStatus" class="small mt-2"></div>
+                </div>
+            </div>
+        </div>
+
+        {% for i in question_range %}
+        <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+            <div class="card-header bg-info text-dark fw-bold py-3">
+                <i class="bi bi-question-circle-fill me-2"></i>Question {{ forloop.counter }}
+            </div>
+
+            <div class="card-body bg-white border-start border-info border-5">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Question Text</label>
+                    <textarea name="question_{{ i }}" class="form-control" rows="2" placeholder="Type the question here..." required></textarea>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <p class="small text-muted mb-2"><i class="bi bi-info-circle me-1"></i>Mark the radio button for the correct answer.</p>
+                    </div>
+
+                    {% for j in "0123" %}
+                    <div class="col-md-6 mb-3">
+                        <div class="input-group">
+                            <div class="input-group-text bg-light">
+                                <input class="form-check-input" type="radio" name="question_{{ i }}_correct" value="{{ j }}" required title="Mark as correct">
+                            </div>
+
+                            <span class="input-group-text small bg-white text-muted">Option {{ forloop.counter }}</span>
+                            <input type="text" name="question_{{ i }}_option_{{ j }}" class="form-control" placeholder="Enter option text" required>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label small">Marks</label>
+                        <input type="number" name="question_{{ i }}_marks" class="form-control" min="1" value="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Submit area -->
+        <div class="card p-3 shadow-sm bg-light sticky-bottom mb-5 border-top border-success border-4">
+            <div class="row g-2">
+                <div class="col-md-8">
+                    <button type="submit" name="save_questions" class="btn btn-success btn-lg w-100 py-3 shadow">
+                        <i class="bi bi-cloud-upload me-2"></i>Save & Finalize Question Paper
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <a href="{% url 'setexam' dys.id %}" class="btn btn-outline-danger btn-lg w-100 py-3">
+                        <i class="bi bi-arrow-counterclockwise me-2"></i>Reset All
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+    {% endif %}
+</div>
+
+{% if num_questions %}
+<script>
+    (function () {
+        const openBtn = document.getElementById("openGeneratePanel");
+        const cancelBtn = document.getElementById("cancelGeneratePanel");
+        const panel = document.getElementById("generatePanel");
+        const generateBtn = document.getElementById("generateWithAiBtn");
+        const topicInput = document.getElementById("aiTopic");
+        const statusBox = document.getElementById("aiStatus");
+        const csrfTokenInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        const paperTitleInput = document.getElementById("paperTitleValue");
+
+        function setStatus(message, kind) {
+            statusBox.textContent = message || "";
+            statusBox.className = "small mt-2";
+            if (kind === "error") statusBox.classList.add("text-danger");
+            if (kind === "ok") statusBox.classList.add("text-success");
+            if (kind === "muted") statusBox.classList.add("text-muted");
+        }
+
+        openBtn.addEventListener("click", function () {
+            panel.classList.remove("d-none");
+            topicInput.focus();
+            setStatus("", "muted");
+        });
+
+        cancelBtn.addEventListener("click", function () {
+            panel.classList.add("d-none");
+            setStatus("", "muted");
+        });
+
+        generateBtn.addEventListener("click", async function () {
+            const topic = topicInput.value.trim();
+            if (!topic) {
+                setStatus("Please enter a topic first.", "error");
+                return;
+            }
+
+            generateBtn.disabled = true;
+            generateBtn.textContent = "Generating...";
+            setStatus("AI is generating questions. Please wait...", "muted");
+
+            const body = new URLSearchParams();
+            body.append("topic", topic);
+            body.append("num_questions", "{{ num_questions }}");
+            body.append("paper_title", paperTitleInput ? paperTitleInput.value : "");
+
+            try {
+                const response = await fetch("{% url 'generate_exam_with_ai' dys.id %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfTokenInput ? csrfTokenInput.value : "",
+                        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+                    },
+                    body: body.toString()
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || "Generation failed.");
+                }
+
+                const questions = data.questions || [];
+                for (let i = 0; i < questions.length; i += 1) {
+                    const q = questions[i];
+                    const qText = document.querySelector(`textarea[name="question_${i}"]`);
+                    if (qText) qText.value = q.question || "";
+
+                    for (let j = 0; j < 4; j += 1) {
+                        const optionInput = document.querySelector(`input[name="question_${i}_option_${j}"]`);
+                        if (optionInput) optionInput.value = (q.options && q.options[j]) ? q.options[j] : "";
+                    }
+
+                    const correctIndex = Number.isInteger(q.correct_index) ? q.correct_index : 0;
+                    const radio = document.querySelector(`input[name="question_${i}_correct"][value="${correctIndex}"]`);
+                    if (radio) radio.checked = true;
+
+                    const marksInput = document.querySelector(`input[name="question_${i}_marks"]`);
+                    if (marksInput) marksInput.value = q.marks || 1;
+                }
+
+                setStatus("Questions generated successfully. Review and edit before saving.", "ok");
+            } catch (err) {
+                setStatus(err.message || "Failed to generate questions.", "error");
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="bi bi-stars me-2"></i>Generate with AI';
+            }
+        });
+    })();
+</script>
+{% endif %}
+{% endblock %}

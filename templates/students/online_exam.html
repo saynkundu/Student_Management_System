@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Online Exam{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white text-center">
+            <h3>{{ paper_title }}</h3>
+            <p class="mb-0">{{ college.name }} | {{ dys.subject.name }}</p>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {% for q in questions %}
+                <div class="mb-4 p-3 border rounded bg-light">
+                    <h5>{{ forloop.counter }}. {{ q.text }}</h5>
+                    <hr>
+                    {% for opt in q.options.all %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="question_{{ q.id }}" value="{{ opt.id }}" required>
+                        <label class="form-check-label">{{ opt.text }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-success btn-lg w-100">Submit Answers</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

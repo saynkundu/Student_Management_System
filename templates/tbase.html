@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Teachers Portal{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/teachers.css' %}">
+</head>
+<body>
+
+    <header>
+        <div class="logo"><strong>Teachers Portal</strong></div>
+        <div class="nav-links">
+            <a href="{% url 'teacher_dashboard' %}">Home</a>
+            <a href="{% url 'student_list' %}">View Students</a>
+            <a href="{% url 'upload_docs' %}">Upload Documents</a>
+            <a href="{% url 'teacher_logout' %}">Logout</a>
+        </div>
+    </header>
+    <main class="teacher-main">
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 College Management System</p>
+    </footer>
+
+</body>
+</html>

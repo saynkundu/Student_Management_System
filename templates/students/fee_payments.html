@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Fee Payments - KUT{% endblock %}
+
+{% block content %}
+<div class="container">
+    
+    <div class="payment-header">
+        <h2>Student Fee Payment</h2>
+        <hr>
+    </div>
+
+
+<!-- ================= PAYMENT STATUS / FORM ================= -->
+    {% if payment_done %}
+        <div class="status-card">
+            <h3 class="heading-success">✅ Fees Paid Successfully</h3>
+            <p>Fees for this academic year (<b>{{ student.get_year_display }}</b>) have already been received.</p>
+            <p><small>Thank you for your timely payment.</small></p>
+        </div>
+    {% else %}
+        <div class="payment-form-container">
+            <h3 class="text-center mb-4">Complete Your Payment</h3>
+            
+            <form method="POST" action="{% url 'payment_processing' %}">
+                {% csrf_token %}
+                
+                <table class="payment-table">
+                    <tr>
+                        <td><label>Student Name</label></td>
+                        <td><input type="text" value="{{ student.student_name }}" readonly></td>
+                    </tr>
+                    <tr>
+                        <td><label>University Roll No</label></td>
+                        <td><input type="text" value="{{ student.roll_number }}" readonly></td>
+                    </tr>
+                    <tr>
+                        <td><label>Department</label></td>
+                        <td><input type="text" value="{{ student.get_department_display }}" readonly></td>
+                    </tr>
+                    <tr>
+                        <td><label>Academic Year</label></td>
+                        <td><input type="text" value="{{ student.get_year_display }}" readonly></td>
+                    </tr>
+                    <tr>
+                        <td><label>Payment Amount (₹)</label></td>
+                        <td><input type="number" name="amount" value="{{ amount }}" readonly></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <button type="submit" class="btn-payment">
+                                CONFIRM & PAY NOW
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    {% endif %}
+
+<!-- ================= PAYMENT HISTORY ================= -->
+    <div class="history-section">
+        <h3 class="history-title">💳 Payment History</h3>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>SL. No</th>
+                    <th>Academic Year</th>
+                    <th>Transaction Date</th>
+                    <th>Amount (₹)</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payment_history %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ payment.get_year_display }}</td>
+                    <td>{{ payment.payment_date|date:"d M, Y" }}</td>
+                    <td>₹{{ payment.amount }}</td>
+                    <td>
+                        <span class="status-success">SUCCESS</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="empty-cell">
+                        No payment history found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="text-note-center">
+            <p><small class="payment-note">
+                Note: In case of any discrepancy or missing transactions, please contact the <b>Accounts Department</b>.
+            </small></p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

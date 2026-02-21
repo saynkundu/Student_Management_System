@@ -1,0 +1,49 @@
+{% extends 'tbase.html' %}
+
+{% block title %}Online Exam Portal{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    
+    <div class="profile-header">
+        {% if profile.profile_image %}
+            <img src="{{ profile.profile_image.url }}" alt="Profile Image" class="profile-image">
+        {% else %}
+            <div class="profile-image-placeholder">No Image</div>
+        {% endif %}
+        
+        <h2>Welcome, {{ profile.user.username }}!</h2>
+        <p class="profile-email">{{ profile.user.email }}</p>
+    </div>
+
+    <hr>
+
+    <div class="profile-details">
+        <p><strong>Phone:</strong> {{ profile.phone|default:"Not provided" }}</p>
+        <p><strong>College:</strong> {{ college.name|default:"Not linked" }}</p>
+        <p><strong>Department:</strong> {{ profile.get_department_display|default:"N/A" }}</p>
+        <p><strong>Specialization:</strong> {{ profile.specialization|default:"N/A" }}</p>
+        <p><strong>Date of Birth:</strong> {{ profile.date_of_birth|date:"d M, Y"|default:"Not set" }}</p>
+        <p><strong>Address:</strong> {{ profile.address|default:"No address added" }}</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+         <!-- Study Materials-->
+        <div class="card">
+            <h4 class="card-title">Attendance Info</h4>
+            <p class="card-text">Keeep your students on track</p>
+            <a href="{% url 'attandance_options' %}" class="btn btn-outline-primary">Take Attandance</a>
+        </div>
+    </div>
+
+<div class="row mt-4">
+         <!-- Set up Exam-->
+        <div class="card">
+            <h4 class="card-title">Onlne Exam</h4>
+            <p class="card-text">Set up your online exams</p>
+            <a href="{% url 'select_exam' %}" class="btn btn-outline-primary">Set Question Paper</a>
+        </div>
+    </div>
+
+{% endblock %}

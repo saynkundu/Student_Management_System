@@ -1,0 +1,71 @@
+
+{% extends 'base.html' %}
+{% block title %}Dashboard - Student Management{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Dashboard</h2>
+
+    {% if student.photo %}
+    <div class="student-photo-wrap">
+        <img src="{{ student.photo.url }}" alt="{{ student.student_name }}" 
+             class="student-photo img-thumbnail">
+    </div>
+{% endif %}
+
+    <h3>Welcome, {{ student.student_name }}!</h3>
+    
+    <div class="student-info">
+        <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
+        <p><strong>Date of Birth:</strong> {{ student.dob }}</p>
+        <p><strong>Department:</strong> {{ student.department }}</p>
+        <p><strong>Year:</strong> {{ student.year }}</p>
+        <p><strong>College:</strong> {{ student.college_name }}</p>
+    </div>
+
+    <hr>
+
+    <div class="row mt-4">
+         <!-- Study Materials-->
+        <div class="card">
+            <h4 class="card-title">Study Materials</h4>
+            <p class="card-text">Access All your study Materials Here</p>
+            <a href="{% url 'study_materials' %}" class="btn btn-outline-primary">Study Materials</a>
+        </div>
+    </div>
+</div>
+        <!-- Result Section -->
+        <div class="card">
+            <h4 class="card-title">📊 Result</h4>
+            <p class="card-text">View your latest academic performance and grades with individual attendance.</p>
+            <!-- Link to latest attempt -->
+<a href="{% url 'exam_result_latest' %}" class="btn btn-outline-danger">View Results</a>
+
+
+     <!-- Online Exam Section -->
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+            <div class="bg-danger text-white rounded-circle p-2 me-3">
+                <i class="bi bi-pencil-square fs-4"></i>
+            </div>
+            <div>
+                <h4 class="card-title mb-0">📝 Online Exam</h4>
+                <p class="text-muted small mb-0">Access your scheduled online tests and assignments.</p>
+            </div>
+        </div>
+
+       <div class="card">
+    <h4 class="card-title">📝 Online Exam</h4>
+    <p class="card-text">Access your scheduled online tests and assignments.</p>
+    <a href="{% url 'exam_list' %}" class="btn btn-danger shadow-sm">
+        <i class="bi bi-play-circle me-1"></i> Start Exam
+    </a>
+</div>
+
+    </div>
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'tbase.html' %}
+{% block title %}Student Details{% endblock %}
+
+{% block content %}
+<h2>Student Details</h2>
+
+{% if student.photo %}
+    <p><strong>Photo:</strong></p>
+    <img src="{{ student.photo.url }}" alt="{{ student.student_name }}" width="150" height="150">
+{% else %}
+    <p><strong>Photo:</strong> No photo available</p>
+{% endif %}
+
+<p><strong>Name:</strong> {{ student.student_name }}</p>
+<p><strong>University Roll:</strong> {{ student.roll_number }}</p>
+<p><strong>Department:</strong> {{ student.department }}</p>
+<p><strong>College:</strong> {{ student.college_name }}</p>
+<p><strong>Date of Birth:</strong> {{ student.dob }}</p>
+<p><strong>Year of Studying:</strong> {{ student.year }}</p>
+
+<a href="{% url 'student_list' %}">Back to Student List</a>
+{% endblock %}

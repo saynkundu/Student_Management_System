@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Exam Result{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="card shadow-sm">
+    <div class="card-header bg-dark text-white">
+      All Attempted Exams
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover mb-0 align-middle">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Paper</th>
+            <th>Score</th>
+            <th>Percentage</th>
+            <th>Number of Class Attended</th>
+            <th>Total Number of Classes Happened</th>
+            <th>Attempted At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in attempt_rows %}
+          <tr {% if row.attempt.id == attempt.id %}class="table-primary"{% endif %}>
+            <td>{{ row.attempt.dys.subject.name }}</td>
+            <td>{{ row.attempt.paper.title|default:"Untitled" }}</td>
+            <td>{{ row.attempt.score }} / {{ row.attempt.total }}</td>
+            <td>
+              {% if row.attempt.total %}
+                {% widthratio row.attempt.score row.attempt.total 100 %}%
+              {% else %}
+                0%
+              {% endif %}
+            </td>
+            <td>{{ row.attended_classes }}</td>
+            <td>{{ row.total_classes }}</td>
+            <td>{{ row.attempt.attempted_at|date:"d M, Y h:i A" }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center text-muted py-4">No exam attempts found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

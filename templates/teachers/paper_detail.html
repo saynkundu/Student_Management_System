@@ -1,0 +1,96 @@
+{% extends "tbase.html" %}
+{% block title %}Paper Detail - {{ paper.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h2 class="mb-0 text-primary"><i class="bi bi-file-earmark-text me-2"></i>{{ paper.title }}</h2>
+      <div class="small text-muted">
+        Subject: {{ paper.dept_year_subject.subject.name }} |
+        Department: {{ paper.dept_year_subject.department }} |
+        Year: {{ paper.dept_year_subject.year }}
+      </div>
+    </div>
+    <div class="text-end">
+      <div class="small text-muted">Created by {{ paper.created_by.username }}</div>
+      <div class="fw-bold">{{ paper.created_at|date:"d M, Y" }}</div>
+      <div class="small text-muted">{{ paper.created_at|date:"h:i A" }}</div>
+    </div>
+  </div>
+
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <span class="badge {% if paper.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+            {% if paper.is_active %}Active{% else %}Not started{% endif %}
+          </span>
+          <span class="ms-2 small text-muted">Questions: {{ paper.questions.count }}</span>
+        </div>
+        <div>
+          <a href="{% url 'setexam' paper.dept_year_subject.id %}" class="btn btn-outline-secondary btn-sm me-2">
+            <i class="bi bi-pencil"></i> Edit
+          </a>
+          <a href="{% url 'select_exam' %}" class="btn btn-outline-dark btn-sm">Back</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h5 class="mb-3">Questions</h5>
+  <ol class="list-group list-group-numbered mb-4">
+    {% for q in questions %}
+      <li class="list-group-item">
+        <div class="d-flex justify-content-between">
+          <div>
+            <div class="fw-bold">{{ q.text }}</div>
+            <div class="small text-muted">Marks: {{ q.marks }}</div>
+            <ul class="mt-2 mb-0">
+              {% for o in q.options.all %}
+                <li>
+                  {{ o.text }}
+                  {% if o.is_correct %}
+                    <span class="badge bg-success ms-2">Correct</span>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="text-end">
+            <div class="small text-muted">Q ID: {{ q.id }}</div>
+            <div class="small text-muted">Created: {{ q.created_at|date:"d M, Y h:i A" }}</div>
+          </div>
+        </div>
+      </li>
+    {% empty %}
+      <li class="list-group-item text-muted">No questions saved for this paper yet.</li>
+    {% endfor %}
+  </ol>
+
+  <div class="mb-4">
+    <form method="post" action="{% url 'start_exam' paper.id %}" onsubmit="return confirm('Start exam now? Students will be able to access it.');">
+      {% csrf_token %}
+      {% if not paper.is_active and paper.questions.count > 0 %}
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-play-fill me-1"></i> Start Exam
+        </button>
+      {% elif paper.is_active %}
+        <button type="button" class="btn btn-secondary" disabled>
+          <i class="bi bi-check-circle me-1"></i> Exam Started
+        </button>
+      {% else %}
+        <button type="button" class="btn btn-outline-secondary" disabled>
+          <i class="bi bi-exclamation-circle me-1"></i> Add Questions First
+        </button>
+      {% endif %}
+    </form>
+  </div>
+
+  {% if paper.is_active and paper.started_at %}
+    <div class="alert alert-success">
+      <strong>Exam started at</strong> {{ paper.started_at|date:"d M, Y h:i A" }}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
