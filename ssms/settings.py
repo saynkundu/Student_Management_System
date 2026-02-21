@@ -22,8 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # --------------------------------------------------
 SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = True  # Production এ False করবে
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+DEBUG = os.getenv("DEBUG", "False") == "True"
+
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 
 # --------------------------------------------------
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
 # --------------------------------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -120,6 +122,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # --------------------------------------------------
@@ -182,3 +185,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # --------------------------------------------------
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+
