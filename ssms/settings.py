@@ -25,11 +25,26 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+raw_allowed_hosts = os.getenv("ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = [host.strip() for host in raw_allowed_hosts.split(",") if host.strip()]
 
+# Keep local development usable when ALLOWED_HOSTS is not configured in .env.
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ["127.0.0.1", "localhost", "0.0.0.0"]
+
+raw_csrf_origins = os.getenv("CSRF_TRUSTED_ORIGINS", "")
 CSRF_TRUSTED_ORIGINS = [
-    f"https://{host}" for host in ALLOWED_HOSTS if host
+    origin.strip() for origin in raw_csrf_origins.split(",") if origin.strip()
 ]
+
+# Backward-compatible fallback: derive https origins from ALLOWED_HOSTS when explicit
+# CSRF_TRUSTED_ORIGINS is not provided.
+if not CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS = [
+        f"https://{host}"
+        for host in ALLOWED_HOSTS
+        if host not in {"127.0.0.1", "localhost", "0.0.0.0"}
+    ]
 
 
 # --------------------------------------------------

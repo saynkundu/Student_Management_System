@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import College, Subject, DepartmentYearSubject, Student, StudentSubject,Notice,FeeStructure,FeePayment,Profile,Document,Attendance,AttendanceSession,Option,Question
 from django.utils.html import format_html
 from django.contrib import admin
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 @admin.register(College)
 class CollegeAdmin(admin.ModelAdmin):
@@ -86,7 +88,84 @@ class FeePaymentAdmin(admin.ModelAdmin):
 
 
 
-admin.site.register(Profile)
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "college",
+        "department",
+        "phone",
+        "profile_image_preview",
+    )
+    list_filter = ("college", "department")
+    search_fields = ("user__username", "user__email", "phone")
+    fields = (
+        "user",
+        "college",
+        "department",
+        "specialization",
+        "phone",
+        "date_of_birth",
+        "address",
+        "profile_image",
+        "profile_image_preview",
+    )
+    readonly_fields = ("profile_image_preview",)
+
+    def profile_image_preview(self, obj):
+        if obj.profile_image:
+            return format_html(
+                '<img src="{}" width="60" height="60" style="object-fit: cover; border-radius: 6px;" />',
+                obj.profile_image.url,
+            )
+        return "No Image"
+    profile_image_preview.short_description = "Image"
+
+
+class ProfileInline(admin.StackedInline):
+    model = Profile
+    can_delete = False
+    extra = 0
+    fields = (
+        "college",
+        "department",
+        "specialization",
+        "phone",
+        "date_of_birth",
+        "address",
+        "profile_image",
+        "profile_image_preview",
+    )
+    readonly_fields = ("profile_image_preview",)
+
+    def profile_image_preview(self, obj):
+        if obj and obj.profile_image:
+            return format_html(
+                '<img src="{}" width="60" height="60" style="object-fit: cover; border-radius: 6px;" />',
+                obj.profile_image.url,
+            )
+        return "No Image"
+    profile_image_preview.short_description = "Image"
+
+
+class CustomUserAdmin(BaseUserAdmin):
+    inlines = (ProfileInline,)
+
+    def profile_image_thumb(self, obj):
+        profile = getattr(obj, "profile", None)
+        if profile and profile.profile_image:
+            return format_html(
+                '<img src="{}" width="36" height="36" style="object-fit: cover; border-radius: 999px;" />',
+                profile.profile_image.url,
+            )
+        return "-"
+    profile_image_thumb.short_description = "Photo"
+
+    list_display = BaseUserAdmin.list_display + ("profile_image_thumb",)
+
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
