@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from ssmsapp.models import Student,Notice,FeeStructure,FeePayment,Document,DepartmentYearSubject,Subject,Attendance,AttendanceSession,Option,Question,StudentExamAttempt,QuestionPaper
+from ssmsapp.models import College,Profile,Student,Notice,FeeStructure,FeePayment,Document,DepartmentYearSubject,Subject,Attendance,AttendanceSession,Option,Question,StudentExamAttempt,QuestionPaper
 from django.db.models import Q,Count
 from django.views.decorators.cache import never_cache
 import razorpay
@@ -105,6 +105,52 @@ def user_login(request):
     return render(request, 'students/login.html')
 
 
+def student_signup(request):
+    colleges = College.objects.all().order_by("name")
+
+    if request.method == "POST":
+        student_name = (request.POST.get("student_name") or "").strip()
+        roll_number = (request.POST.get("roll_number") or "").strip()
+        dob = request.POST.get("dob")
+        photo = request.FILES.get("photo")
+        college_id = request.POST.get("college")
+        department = request.POST.get("department")
+        year = request.POST.get("year")
+
+        if not all([student_name, roll_number, dob, college_id, department, year]):
+            messages.error(request, "Please fill all required fields.")
+        elif Student.objects.filter(roll_number=roll_number).exists():
+            messages.error(request, "This roll number is already registered.")
+        else:
+            try:
+                college = College.objects.get(id=college_id)
+            except College.DoesNotExist:
+                messages.error(request, "Selected college is invalid.")
+            else:
+                student = Student.objects.create(
+                    student_name=student_name,
+                    roll_number=roll_number,
+                    dob=dob,
+                    photo=photo,
+                    college_name=college,
+                    department=department,
+                    year=year,
+                )
+                request.session["student_id"] = student.id
+                messages.success(request, f"Welcome, {student.student_name}")
+                return redirect("dashboard")
+
+    return render(
+        request,
+        "students/signup.html",
+        {
+            "colleges": colleges,
+            "department_choices": Student.DEPARTMENT_CHOICES,
+            "year_choices": Student.YEAR_CHOICES,
+        },
+    )
+
+
 @never_cache
 def dashboard(request):
     student_id = request.session.get('student_id')
@@ -148,6 +194,30 @@ def study_materials(request):
                       'documents': documents,  # Update the variable name here
                   })
 
+
+@never_cache
+def faculties(request):
+    student_id_session = request.session.get("student_id")
+    if not student_id_session:
+        return redirect("user_login")
+
+    logged_student = get_object_or_404(Student, id=student_id_session)
+
+    teachers = (
+        Profile.objects.select_related("user", "college")
+        .filter(college=logged_student.college_name)
+        .exclude(user__is_superuser=True)
+        .order_by("user__username")
+    )
+
+    return render(
+        request,
+        "students/faculties.html",
+        {
+            "student": logged_student,
+            "teachers": teachers,
+        },
+    )
 @never_cache
 def fee_payments(request):
     payment_done = ''
@@ -379,8 +449,15 @@ def exam_list(request):
 
     base_qs = base_qs.select_related('dept_year_subject__subject')
 
-    live_exams = base_qs.filter(is_active=True).annotate(question_count=Count('questions')).order_by('-started_at')
-    upcoming_exams = base_qs.filter(is_active=False).annotate(question_count=Count('questions')).order_by('-created_at')
+    today = timezone.localdate()
+
+    # Show only currently running exams for today so previous records are not listed here.
+    live_exams = (
+        base_qs.filter(is_active=True, started_at__date=today)
+        .annotate(question_count=Count('questions'))
+        .order_by('-started_at')
+    )
+    upcoming_exams = QuestionPaper.objects.none()
 
     return render(request, "students/exam_list.html", {
         "student": student,
@@ -485,6 +562,15 @@ def exam_result(request, attempt_id=None):
         return redirect('user_login')
 
     student = get_object_or_404(Student, id=student_id_session)
+
+    if request.method == "POST" and request.POST.get("clear_attempts") == "1":
+        deleted_count, _ = StudentExamAttempt.objects.filter(student=student).delete()
+        if deleted_count:
+            messages.success(request, "All attempted exam records have been cleared.")
+        else:
+            messages.info(request, "No attempted exam records found to clear.")
+        return redirect("exam_result_latest")
+
     attempts = StudentExamAttempt.objects.filter(student=student).select_related(
         'dys__subject', 'paper'
     ).order_by('-attempted_at')
@@ -497,8 +583,17 @@ def exam_result(request, attempt_id=None):
     else:
         attempt = attempts.first()
         if not attempt:
-            messages.info(request, "No exam attempts found.")
-            return redirect(reverse('exam_list'))
+            return render(
+                request,
+                "students/exam_result.html",
+                {
+                    "attempt": None,
+                    "student": student,
+                    "dys": None,
+                    "percent": 0,
+                    "attempt_rows": [],
+                },
+            )
 
     # Compute percentage safely (0-100)
     percent = 0
@@ -542,7 +637,7 @@ def exam_result(request, attempt_id=None):
     context = {
         "attempt": attempt,
         "student": student,
-        "dys": attempt.dys,
+        "dys": attempt.dys if attempt else None,
         "percent": percent,
         "attempt_rows": attempt_rows,
     }
@@ -1104,13 +1199,23 @@ def generate_exam_with_ai(request, dept_year_subject_id):
 def select_exam(request):
     profile = request.user.profile
     college = profile.college
+    today = timezone.localdate()
 
     dys_queryset = DepartmentYearSubject.objects.select_related('subject').all()
     departments = sorted(list(dys_queryset.values_list('department', flat=True).distinct()))
     dys_data = list(dys_queryset.values('id', 'department', 'year', 'subject__id', 'subject__name'))
 
+    # Clear previous records before today for this teacher.
+    QuestionPaper.objects.filter(
+        created_by=request.user,
+        created_at__date__lt=today
+    ).delete()
+
     # Use QuestionPaper model to list papers created by this teacher
-    past_papers = QuestionPaper.objects.filter(created_by=request.user).select_related('dept_year_subject__subject').order_by('-created_at')
+    past_papers = QuestionPaper.objects.filter(
+        created_by=request.user,
+        created_at__date=today
+    ).select_related('dept_year_subject__subject').order_by('-created_at')
 
     context = {
         "college": college,

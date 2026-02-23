@@ -18,10 +18,11 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings 
 from django.conf.urls.static import static
-from .views import user_login,dashboard,logout,student_list,student_details,notices,fee_payments,payment_processing,payment_success,onlineexams,teacher_login,teacher_logout,home,teacher_dashboard,upload_docs,study_materials,load_subjects,attandance,attandance_options,view_attendance,setexam,select_exam,setexam_redirect,exam_list,take_exam,exam_result,start_exam,paper_detail,generate_exam_with_ai
+from .views import user_login,student_signup,dashboard,logout,student_list,student_details,notices,fee_payments,payment_processing,payment_success,onlineexams,teacher_login,teacher_logout,home,teacher_dashboard,upload_docs,study_materials,load_subjects,attandance,attandance_options,view_attendance,setexam,select_exam,setexam_redirect,exam_list,take_exam,exam_result,start_exam,paper_detail,generate_exam_with_ai,faculties
 
 urlpatterns = [
     path('',home,name='home'),
+    path('faculties/',faculties,name='faculties'),
     path('online-exam/<int:dys_id>/', onlineexams, name='online_exam'),
     path('exams/',exam_list, name='exam_list'),
     path('take-exam/<int:dys_id>/',take_exam, name='take_exam'),
@@ -33,6 +34,7 @@ urlpatterns = [
     path('student_list/',student_list,name='student_list'),
     path('dashboard/',dashboard,name='dashboard'),
     path('user_login/',user_login,name='user_login'),
+    path('student_signup/',student_signup,name='student_signup'),
     path('logout/',logout,name='logout'),
     path('study_materials/',study_materials,name='study_materials'),
     path('admin/', admin.site.urls),

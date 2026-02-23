@@ -5,7 +5,7 @@
 {% block content %}
 <div class="dashboard-container">
     
-    <div class="profile-header">
+    <div class="profile-header" style="position: relative; top: 10px;">
         {% if profile.profile_image %}
             <img src="{{ profile.profile_image.url }}" alt="Profile Image" class="profile-image">
         {% else %}
@@ -18,7 +18,7 @@
 
     <hr>
 
-    <div class="profile-details">
+    <div class="profile-details"  style="position: relative; left: 20px;">
         <p><strong>Phone:</strong> {{ profile.phone|default:"Not provided" }}</p>
         <p><strong>College:</strong> {{ college.name|default:"Not linked" }}</p>
         <p><strong>Department:</strong> {{ profile.get_department_display|default:"N/A" }}</p>
@@ -40,7 +40,7 @@
 <div class="row mt-4">
          <!-- Set up Exam-->
         <div class="card">
-            <h4 class="card-title">Onlne Exam</h4>
+            <h4 class="card-title">Online Exam</h4>
             <p class="card-text">Set up your online exams</p>
             <a href="{% url 'select_exam' %}" class="btn btn-outline-primary">Set Question Paper</a>
         </div>

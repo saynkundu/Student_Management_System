@@ -3,9 +3,44 @@
 {% block title %}Attendance options{% endblock %}
 
 {% block content %}
-<h2>Attendance Options</h2>
-<div class="attendance-links">
-    <a href="{% url 'view_attendance' %}">View Attendance</a>
-    <a href="{% url 'attandance' %}">Take Attendance</a>
-</div>
+<section class="attendance-page">
+    <div class="attendance-intro card">
+        <p class="attendance-eyebrow mb-1">Teacher Tools</p>
+        <h2 class="mb-2">Attendance Management Center</h2>
+        <p class="mb-0 text-muted">
+            Record daily class attendance accurately and review student participation trends.
+            Use the options below to either mark attendance for the current class session or inspect historical records.
+        </p>
+    </div>
+
+    <div class="attendance-links attendance-options-grid mt-3">
+        <a class="attendance-option-card" href="{% url 'attandance' %}">
+            <span class="attendance-option-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false">
+                    <path d="M7 3h10a2 2 0 0 1 2 2v14l-3-2-4 2-4-2-3 2V5a2 2 0 0 1 2-2Z"></path>
+                    <path d="M9 8h6M9 12h6"></path>
+                </svg>
+            </span>
+            <span class="attendance-option-title">Take Attendance</span>
+            <span class="attendance-option-text">
+                Mark each student as present, absent, or late for today's class in a structured and quick form.
+            </span>
+            <span class="attendance-option-action">Open Attendance Form</span>
+        </a>
+
+        <a class="attendance-option-card" href="{% url 'view_attendance' %}">
+            <span class="attendance-option-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" focusable="false">
+                    <path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Z"></path>
+                    <path d="M14 3v5h5M8 13h8M8 17h6"></path>
+                </svg>
+            </span>
+            <span class="attendance-option-title">View Attendance</span>
+            <span class="attendance-option-text">
+                Review previous attendance entries, monitor consistency, and identify students requiring follow-up.
+            </span>
+            <span class="attendance-option-action">View Attendance Records</span>
+        </a>
+    </div>
+</section>
 {% endblock %}

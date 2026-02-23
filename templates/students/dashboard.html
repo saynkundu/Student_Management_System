@@ -1,71 +1,92 @@
-
 {% extends 'base.html' %}
 {% block title %}Dashboard - Student Management{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Dashboard</h2>
+<div class="container mt-4">
+
+    <h2 class="mb-4">Dashboard</h2>
 
     {% if student.photo %}
-    <div class="student-photo-wrap">
-        <img src="{{ student.photo.url }}" alt="{{ student.student_name }}" 
-             class="student-photo img-thumbnail">
+    <div class="text-center mb-3">
+        <img src="{{ student.photo.url }}" 
+             alt="{{ student.student_name }}" 
+             class="img-thumbnail rounded-circle"
+             style="width:150px; height:150px; object-fit:cover;">
     </div>
-{% endif %}
+    {% endif %}
 
-    <h3>Welcome, {{ student.student_name }}!</h3>
-    
-    <div class="student-info">
-        <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
-        <p><strong>Date of Birth:</strong> {{ student.dob }}</p>
-        <p><strong>Department:</strong> {{ student.department }}</p>
-        <p><strong>Year:</strong> {{ student.year }}</p>
-        <p><strong>College:</strong> {{ student.college_name }}</p>
+    <h3 class="text-center mb-3">Welcome, {{ student.student_name }}!</h3>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
+                    <p><strong>Date of Birth:</strong> {{ student.dob }}</p>
+                    <p><strong>Department:</strong> {{ student.department }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Year:</strong> {{ student.year }}</p>
+                    <p><strong>College:</strong> {{ student.college_name }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <hr>
 
+    <!-- Dashboard Cards -->
     <div class="row mt-4">
-         <!-- Study Materials-->
-        <div class="card">
-            <h4 class="card-title">Study Materials</h4>
-            <p class="card-text">Access All your study Materials Here</p>
-            <a href="{% url 'study_materials' %}" class="btn btn-outline-primary">Study Materials</a>
+
+        <!-- Study Materials -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 text-center">
+                <div class="card-body">
+                    <h4 class="card-title">📚 Study Materials</h4>
+                    <p class="card-text">
+                       Access all study materials and reach your full potential.
+                    </p>
+                    <a href="{% url 'study_materials' %}" 
+                       class="btn btn-outline-primary">
+                        Study Materials
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+
         <!-- Result Section -->
-        <div class="card">
-            <h4 class="card-title">📊 Result</h4>
-            <p class="card-text">View your latest academic performance and grades with individual attendance.</p>
-            <!-- Link to latest attempt -->
-<a href="{% url 'exam_result_latest' %}" class="btn btn-outline-danger">View Results</a>
-
-
-     <!-- Online Exam Section -->
-<div class="card shadow-sm border-0">
-    <div class="card-body">
-        <div class="d-flex align-items-center mb-3">
-            <div class="bg-danger text-white rounded-circle p-2 me-3">
-                <i class="bi bi-pencil-square fs-4"></i>
-            </div>
-            <div>
-                <h4 class="card-title mb-0">📝 Online Exam</h4>
-                <p class="text-muted small mb-0">Access your scheduled online tests and assignments.</p>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 text-center">
+                <div class="card-body">
+                    <h4 class="card-title">📊 Results</h4>
+                    <p class="card-text">
+                        View your academic performance, grades and attendance.
+                    </p>
+                    <a href="{% url 'exam_result_latest' %}" 
+                       class="btn btn-outline-danger">
+                        View Results
+                    </a>
+                </div>
             </div>
         </div>
 
-       <div class="card">
-    <h4 class="card-title">📝 Online Exam</h4>
-    <p class="card-text">Access your scheduled online tests and assignments.</p>
-    <a href="{% url 'exam_list' %}" class="btn btn-danger shadow-sm">
-        <i class="bi bi-play-circle me-1"></i> Start Exam
-    </a>
-</div>
+        <!-- Online Exam Section -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 text-center">
+                <div class="card-body">
+                    <h4 class="card-title">📝 Online Exam</h4>
+                    <p class="card-text">
+                        Access your scheduled online tests and assignments.
+                    </p>
+                    <a href="{% url 'exam_list' %}" 
+                       class="btn btn-danger">
+                        Start Exam
+                    </a>
+                </div>
+            </div>
+        </div>
 
     </div>
-</div>
 
 </div>
-
 {% endblock %}

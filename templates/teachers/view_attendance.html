@@ -19,7 +19,7 @@
 <!-- Filter Form -->
 <!-- ========================= -->
 
-<form method="post" id="attendanceForm">
+<form method="post" id="attendanceForm" class="filter-form">
     {% csrf_token %}
 
     <!-- Department -->
@@ -73,30 +73,32 @@
 {% endif %}
 
 {% if attendance_records %}
-<table>
-    <thead>
-        <tr>
-            <th>Roll Number</th>
-            <th>Name</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for record in attendance_records %}
-        <tr>
-            <td>{{ record.student.roll_number }}</td>
-            <td>{{ record.student.student_name }}</td>
-            <td>
-                {% if record.status %}
-                    <b class="text-success">Present</b>
-                {% else %}
-                    <b class="text-danger">Absent</b>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="data-scroll">
+    <table>
+        <thead>
+            <tr>
+                <th>Roll Number</th>
+                <th>Name</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in attendance_records %}
+            <tr>
+                <td>{{ record.student.roll_number }}</td>
+                <td>{{ record.student.student_name }}</td>
+                <td>
+                    {% if record.status %}
+                        <b class="text-success">Present</b>
+                    {% else %}
+                        <b class="text-danger">Absent</b>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endif %}
 
 <!-- ========================= -->

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Faculties{% endblock %}
+
+{% block content %}
+<section class="faculties-page">
+    <div class="faculties-header card">
+        <h2 class="mb-2">Faculty Directory</h2>
+        <p class="mb-2">
+            College: <strong>{{ student.college_name.name }}</strong>
+        </p>
+        <p class="faculties-subtitle mb-0">
+            Find all available teachers from your college with department and contact details.
+        </p>
+    </div>
+
+    {% if teachers %}
+        <div class="faculty-grid">
+            {% for teacher in teachers %}
+                <article class="faculty-card">
+                    <div class="faculty-top">
+                        {% if teacher.profile_image %}
+                            <img src="{{ teacher.profile_image.url }}" alt="{{ teacher.user.username }}" class="faculty-avatar">
+                        {% else %}
+                            <span class="faculty-avatar faculty-avatar-placeholder">
+                                {{ teacher.user.username|first|upper }}
+                            </span>
+                        {% endif %}
+                        <div>
+                            <h3 class="faculty-name">{{ teacher.user.get_full_name|default:teacher.user.username }}</h3>
+                            <p class="faculty-role mb-0">Teacher</p>
+                        </div>
+                    </div>
+
+                    <div class="faculty-meta">
+                        <p><strong>Department:</strong> {{ teacher.get_department_display|default:"Not set" }}</p>
+                        <p><strong>Specialization:</strong> {{ teacher.specialization|default:"Not set" }}</p>
+                        <p><strong>Email:</strong> {{ teacher.user.email|default:"Not available" }}</p>
+                        <p><strong>Phone:</strong> {{ teacher.phone|default:"Not available" }}</p>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card faculties-empty">
+            <p class="mb-0">No faculty profiles found for your college.</p>
+        </div>
+    {% endif %}
+</section>
+
+<style>
+    .faculties-page {
+        padding: 24px 5%;
+    }
+
+    .faculties-header {
+        margin-bottom: 18px;
+    }
+
+    .faculties-header h2 {
+        margin-bottom: 8px;
+        border: 0;
+        padding: 0;
+    }
+
+    .faculties-subtitle {
+        color: #5b6678;
+    }
+
+    .faculty-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+    }
+
+    .faculty-card {
+        background: #fff;
+        border: 1px solid #dce4ef;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 10px 24px rgba(22, 36, 58, 0.07);
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .faculty-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .faculty-avatar {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #d0dff0;
+        flex-shrink: 0;
+    }
+
+    .faculty-avatar-placeholder {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #10385f;
+        background: #eaf3ff;
+    }
+
+    .faculty-name {
+        margin: 0;
+        font-size: 1.05rem;
+        color: #153f67;
+    }
+
+    .faculty-role {
+        color: #5a6a80;
+        font-size: 0.9rem;
+    }
+
+    .faculty-meta p {
+        margin: 0 0 8px;
+        color: #32445c;
+        word-break: break-word;
+    }
+
+    .faculty-meta p:last-child {
+        margin-bottom: 0;
+    }
+
+    .faculties-empty {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .faculties-page {
+            padding: 16px 3%;
+        }
+
+        .faculty-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

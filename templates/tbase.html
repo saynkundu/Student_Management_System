@@ -10,7 +10,21 @@
 <body>
 
     <header>
-        <div class="logo"><strong>Teachers Portal</strong></div>
+        <div class="logo"> <!-- Logo Section -->
+<div style="height:60px; display:flex; align-items:center;">
+    <a href="{% url 'dashboard' %}" style="display:flex; align-items:center;">
+        <img src="{% static 'images/Academix.svg' %}" 
+             alt="Smart Student Management Logo"
+             style="
+                max-height:100%;
+                max-width:180px;
+                width:auto;
+                height:auto;
+                object-fit:contain;
+                display:block;
+             ">
+    </a>
+</div></div>
         <div class="nav-links">
             <a href="{% url 'teacher_dashboard' %}">Home</a>
             <a href="{% url 'student_list' %}">View Students</a>
@@ -22,7 +36,7 @@
         {% block content %}{% endblock %}
     </main>
     <footer>
-        <p>&copy; 2024 College Management System</p>
+        <p>&copy; 2026 College Management System</p>
     </footer>
 
 </body>

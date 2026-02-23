@@ -440,6 +440,99 @@ thead th {
     font-weight: 600;
 }
 
+.attendance-page {
+    display: grid;
+    gap: 14px;
+}
+
+.attendance-intro {
+    background: linear-gradient(135deg, #ffffff 0%, #f4f9ff 100%);
+}
+
+.attendance-eyebrow {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--tp-primary-soft);
+    color: var(--tp-primary);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.attendance-options-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+.attendance-option-card {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left !important;
+    gap: 10px;
+    padding: 18px !important;
+    border: 1px solid #cfe0f3 !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    color: inherit;
+    text-decoration: none !important;
+    box-shadow: 0 10px 24px rgba(15, 76, 129, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.attendance-option-card:hover {
+    transform: translateY(-3px);
+    border-color: #9bbbe0 !important;
+    box-shadow: 0 14px 28px rgba(15, 76, 129, 0.14);
+}
+
+.attendance-option-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--tp-primary-soft);
+    color: var(--tp-primary);
+}
+
+.attendance-option-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.attendance-option-icon path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.attendance-option-title {
+    color: #123d63;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.attendance-option-text {
+    color: var(--tp-muted);
+    font-size: 0.93rem;
+    line-height: 1.55;
+    flex: 1;
+}
+
+.attendance-option-action {
+    color: var(--tp-primary);
+    font-size: 0.86rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
 .sticky-bottom {
     position: sticky;
     bottom: 16px;

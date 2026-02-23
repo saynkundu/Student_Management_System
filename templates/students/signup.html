@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Sign Up</title>
+    <style>
+        /* পুরো পেজের সেটআপ */
+        body.student-login-page {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* ফর্ম কন্টেইনার */
+        .student-login-form {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+        }
+
+        .student-login-form h2 {
+            color: #1e293b;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        /* কমন ইনপুট এবং সিলেক্ট বক্স স্টাইল */
+        .student-login-form label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .student-login-form input, 
+        .student-login-form select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 18px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: #f8fafc;
+            color: #1e293b;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            appearance: none; /* ডিফল্ট ব্রাউজার স্টাইল রিমুভ */
+        }
+
+        /* সিলেক্ট বক্সের জন্য কাস্টম অ্যারো আইকন */
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            cursor: pointer;
+        }
+
+        .student-login-form input:focus, 
+        .student-login-form select:focus {
+            outline: none;
+            border-color: #2563eb;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        /* বাটন স্টাইল */
+        .student-login-form button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .student-login-form button:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .back-login {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #64748b;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-login:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        /* মেসেজ স্টাইল */
+        .form-msg {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .error { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    </style>
+</head>
+<body class="student-login-page">
+
+<form method="post" enctype="multipart/form-data" class="student-login-form">
+    {% csrf_token %}
+    <h2 style="text-align: center;">Create Student Account</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="form-msg {% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <label for="student_name">Full Name</label>
+    <input type="text" id="student_name" name="student_name" placeholder="Sayan Kundu" required value="{{ request.POST.student_name|default:'' }}">
+
+    <label for="roll_number">University Roll Number</label>
+    <input type="text" id="roll_number" name="roll_number" placeholder="Enter Roll No." required value="{{ request.POST.roll_number|default:'' }}">
+
+    <label for="dob">Date of Birth</label>
+    <input type="date" id="dob" name="dob" required value="{{ request.POST.dob|default:'' }}">
+
+    <label for="college">College(ST Thomas College of Engineering|Recommended)</label>
+    <select id="college" name="college" required>
+        <option value="">Choose your college</option>
+        {% for college in colleges %}
+            <option value="{{ college.id }}" {% if request.POST.college == college.id|stringformat:'s' %}selected{% endif %}>
+                {{ college.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label for="department">Department</label>
+    <select id="department" name="department" required>
+        <option value="">Choose department</option>
+        {% for value, label in department_choices %}
+            <option value="{{ value }}" {% if request.POST.department == value %}selected{% endif %}>
+                {{ label }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label for="year">Academic Year</label>
+    <select id="year" name="year" required>
+        <option value="">Select year</option>
+        {% for value, label in year_choices %}
+            <option value="{{ value }}" {% if request.POST.year == value %}selected{% endif %}>
+                {{ label }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label for="photo">Profile Image</label>
+    <input type="file" id="photo" name="photo" accept="image/*" style="padding: 8px;">
+
+    <button type="submit">Sign Up Now</button>
+    <a href="{% url 'user_login' %}" class="back-login">Already have an account? Login</a>
+</form>
+
+</body>
+</html>

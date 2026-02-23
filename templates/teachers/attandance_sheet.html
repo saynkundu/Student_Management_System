@@ -10,7 +10,7 @@
 <!-- Selection Form -->
 <!-- ============================= -->
 
-<form method="post">
+<form method="post" class="filter-form">
     {% csrf_token %}
 
     <!-- Department -->
@@ -81,35 +81,37 @@
     <input type="hidden" name="year" value="{{ selected_year }}">
     <input type="hidden" name="subject" value="{{ selected_subject }}">
 
-    <table>
-        <thead>
-            <tr>
-                <th>Roll Number</th>
-                <th>Name</th>
-                <th>Present</th>
-                <th>Absent</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for student in students %}
-            <tr>
-                <td>{{ student.roll_number }}</td>
-                <td>{{ student.student_name }}</td>
-                <td>
-                    <input type="radio"
-                           name="status_{{ student.id }}"
-                           value="present"
-                           required>
-                </td>
-                <td>
-                    <input type="radio"
-                           name="status_{{ student.id }}"
-                           value="absent">
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="data-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll Number</th>
+                    <th>Name</th>
+                    <th>Present</th>
+                    <th>Absent</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.roll_number }}</td>
+                    <td>{{ student.student_name }}</td>
+                    <td>
+                        <input type="radio"
+                               name="status_{{ student.id }}"
+                               value="present"
+                               required>
+                    </td>
+                    <td>
+                        <input type="radio"
+                               name="status_{{ student.id }}"
+                               value="absent">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <br>
 

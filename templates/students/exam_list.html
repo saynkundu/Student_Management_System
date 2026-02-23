@@ -10,12 +10,11 @@
         <small class="text-muted">{{ student.department }} | Year {{ student.year }}</small>
       </div>
       <div>
-        <small class="text-muted">Logged in as {{ request.user.username }}</small>
+        <small class="text-muted">Current Session Exams</small>
       </div>
     </div>
 
     <div class="card-body">
-      <!-- Live Exams -->
       <h5 class="mb-3">Live Exams</h5>
       <div class="list-group mb-4">
         {% if live_exams %}
@@ -25,15 +24,15 @@
                 <h5 class="mb-1 text-primary">{{ paper.dept_year_subject.subject.name }}</h5>
                 <div class="small text-muted">
                   {{ paper.dept_year_subject.department }} | Year {{ paper.dept_year_subject.year }}
-                  &nbsp;•&nbsp; Questions: {{ paper.question_count }}
+                  &nbsp;|&nbsp; Questions: {{ paper.question_count }}
                 </div>
                 <div class="small text-muted">Paper: {{ paper.title|default:"Untitled" }}</div>
               </div>
 
               <div class="text-end">
-                <div class="small text-muted mb-1">Started: {% if paper.started_at %}{{ paper.started_at|date:"d M, Y h:i A" }}{% else %}—{% endif %}</div>
+                <div class="small text-muted mb-1">Started: {% if paper.started_at %}{{ paper.started_at|date:"d M, Y h:i A" }}{% else %}-{% endif %}</div>
                 <a href="{% url 'take_exam' paper.dept_year_subject.id %}" class="btn btn-success rounded-pill px-4">
-                  Attempt Now <i class="bi bi-arrow-right-circle ms-1"></i>
+                  Attempt Now
                 </a>
               </div>
             </div>
@@ -43,40 +42,8 @@
         {% endif %}
       </div>
 
-      <!-- Upcoming Exams -->
-      <h5 class="mb-3">Upcoming Exams</h5>
-      <div class="list-group">
-        {% if upcoming_exams %}
-          {% for paper in upcoming_exams %}
-            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-              <div>
-                <h5 class="mb-1">{{ paper.dept_year_subject.subject.name }}</h5>
-                <div class="small text-muted">
-                  {{ paper.dept_year_subject.department }} | Year {{ paper.dept_year_subject.year }}
-                  &nbsp;•&nbsp; Questions: {{ paper.question_count }}
-                </div>
-                <div class="small text-muted">Paper: {{ paper.title|default:"Untitled" }}</div>
-              </div>
-
-              <div class="text-end">
-                <div class="small text-muted mb-1">Created: {{ paper.created_at|date:"d M, Y h:i A" }}</div>
-                <button class="btn btn-outline-secondary rounded-pill px-4" disabled>
-                  Upcoming
-                </button>
-              </div>
-            </div>
-          {% endfor %}
-        {% else %}
-          <div class="list-group-item text-muted py-4">No upcoming exams.</div>
-        {% endif %}
-      </div>
-
-      <!-- Optional note -->
       <div class="mt-4">
-        <small class="text-muted">
-          Exams marked <strong>Live</strong> are started by the teacher and available to attempt.
-          Upcoming exams are prepared by teachers but not yet started.
-        </small>
+        <small class="text-muted">Only currently available exams are shown here. Previous records are not listed.</small>
       </div>
     </div>
   </div>

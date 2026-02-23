@@ -6,12 +6,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .student-login-page {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .student-login-form {
+            width: 100%;
+            max-width: 430px;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+
+        .student-login-form button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #101e3c, #1d274a);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .student-login-form button:hover {
+            background: linear-gradient(135deg, #1e40af, #1e3a8a);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(30, 64, 175, 0.3);
+        }
+
+        .student-login-form button:active {
+            transform: translateY(0px);
+            box-shadow: none;
+        }
+
+        .signup-btn {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+            padding: 11px;
+            border-radius: 8px;
+            border: 1px solid #101e3c;
+            color: #101e3c;
+            text-decoration: none;
+            font-weight: 600;
+            background: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .signup-btn:hover {
+            background: #101e3c;
+            color: #ffffff;
+        }
+
+        .login-logo-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 8px;
+}
+
+.login-logo {
+    width: 250px;         /* নির্দিষ্ট প্রস্থ */
+    height: 80px;        /* নির্দিষ্ট উচ্চতা */
+    object-fit: cover;    /* এটি ইমেজকে জুম করে বাড়তি অংশ Crop করে ফেলবে */
+    object-position: center; /* ইমেজের মাঝখানের অংশ ফোকাসে রাখবে */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;     /* বক্সের বাইরের অংশ পুরোপুরি হাইড রাখবে */
+}
+
+
+        @media (max-width: 768px), (max-height: 740px) {
+            .student-login-page {
+                align-items: flex-start !important;
+            }
+        }
+    </style>
 </head>
 <body class="student-login-page">
 
-<form method="post" class="student-login-form">
+<form method="post" class="student-login-form" style="padding-top: 10px;">
     {% csrf_token %}
-    <h2>Student Login</h2>
+
+    <div class="login-logo-wrap">
+        <img src="{% static 'images/Academix_blue.svg' %}" alt="Academix Blue Logo" class="login-logo">
+    </div>
+
+    <h2 style="text-align: center; margin-top: 5px;">Student Login</h2>
+   <p>
+  <strong>Demo Credentials:(Recommended)</strong><br>
+  University Roll No: <code>12230623043</code><br>
+  Date of Birth: <code>14-06-2004</code>
+  <p>Developed By: <code><b><a href="https://www.linkedin.com/in/saynkundu/" style="text-decoration:underline; color: black;">Sayan Kundu</a></b></code></p>
+</p>
+
     <label for="roll_number">University Roll Number:</label>
     <input type="text" id="roll_number" name="roll_number" required autocomplete="username">
 
@@ -19,6 +118,7 @@
     <input type="date" id="dob" name="dob" required>
 
     <button type="submit">Login</button>
+  <!--  <a href="{% url 'student_signup' %}" class="signup-btn">Sign Up</a>-->
 </form>
 
 </body>

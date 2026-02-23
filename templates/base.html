@@ -9,19 +9,40 @@
 </head>
 <body>
 
-<header>
-    <h2>Smart Student Management System</h2>
+<header class="main-header">
+    
+    <!-- Logo Section -->
+<div style="height:60px; display:flex; align-items:center;">
+    <a href="{% url 'dashboard' %}" style="display:flex; align-items:center;">
+        <img src="{% static 'images/Academix.svg' %}" 
+             alt="Smart Student Management Logo"
+             style="
+                max-height:100%;
+                max-width:180px;
+                width:auto;
+                height:auto;
+                object-fit:contain;
+                display:block;
+             ">
+    </a>
+</div>
+
+    <!-- Navigation -->
     <nav>
         <a href="{% url 'dashboard' %}">Home</a>
+
         <a href="{% url 'notices' %}">
             Notices 
             {% if new_notices_count > 0 %}
                 <span class="notice-count">({{ new_notices_count }})</span>
             {% endif %}
         </a>
+
         <a href="{% url 'fee_payments' %}">Fees Payment</a>
+         <a href="{% url 'faculties' %}">Faculties</a>
         <a href="{% url 'logout' %}">Logout</a>
     </nav>
+
 </header>
 
 <main>
