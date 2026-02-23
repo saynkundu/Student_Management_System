@@ -6,41 +6,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Teachers Portal{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/teachers.css' %}">
+    <style>
+        .teacher-brand-wrap {
+            height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .teacher-brand-wrap a {
+            display: flex;
+            align-items: center;
+        }
+
+        .teacher-brand-wrap img {
+            max-height: 100%;
+            max-width: 180px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+        }
+
+        .teacher-nav-toggle {
+            display: none;
+            width: 42px;
+            height: 42px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background: transparent;
+            border-radius: 10px;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .teacher-nav-toggle span {
+            width: 18px;
+            height: 2px;
+            background: #fff;
+            border-radius: 3px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .teacher-nav-toggle {
+                display: inline-flex;
+            }
+
+            .nav-links {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                margin-top: 10px;
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .nav-links a {
+                width: 100%;
+                text-align: left;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo"> <!-- Logo Section -->
-<div style="height:60px; display:flex; align-items:center;">
-    <a href="{% url 'dashboard' %}" style="display:flex; align-items:center;">
-        <img src="{% static 'images/Academix.svg' %}" 
-             alt="Smart Student Management Logo"
-             style="
-                max-height:100%;
-                max-width:180px;
-                width:auto;
-                height:auto;
-                object-fit:contain;
-                display:block;
-             ">
-    </a>
-</div></div>
-        <div class="nav-links">
-            <a href="{% url 'teacher_dashboard' %}">Home</a>
-            <a href="{% url 'student_list' %}">View Students</a>
-            <a href="{% url 'upload_docs' %}">Upload Documents</a>
-            <a href="{% url 'teacher_logout' %}">Logout</a>
-        </div>
-    </header>
-    <main class="teacher-main">
-        {% block content %}{% endblock %}
-    </main>
-   <footer style="display: flex; justify-content: center; align-items: center; border-top: 1px solid #ddd; padding: 30px 0; margin-bottom: 0px; position: relative;">
-    <p style="margin: 0;">© 2026 Smart Student Management System</p>
-    <p style="margin: 0; position: absolute; right: 20px;">
-        Developed By: <code><b><a href="https://www.linkedin.com/in/saynkundu/" style="text-decoration:underline; color: white;">Sayan Kundu</a></b></code>
+<header>
+    <div class="teacher-brand-wrap">
+        <a href="{% url 'teacher_dashboard' %}">
+            <img src="{% static 'images/Academix.svg' %}" alt="Smart Student Management Logo">
+        </a>
+    </div>
+
+    <button class="teacher-nav-toggle" type="button" aria-label="Toggle navigation" aria-controls="teacher-nav" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <div class="nav-links" id="teacher-nav">
+        <a href="{% url 'teacher_dashboard' %}">Home</a>
+        <a href="{% url 'student_list' %}">View Students</a>
+        <a href="{% url 'upload_docs' %}">Upload Documents</a>
+        <a href="{% url 'teacher_logout' %}">Logout</a>
+    </div>
+</header>
+
+<main class="teacher-main">
+    {% block content %}{% endblock %}
+</main>
+
+<footer style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; border-top: 1px solid #ddd; padding: 20px; gap: 15px; background-color: #0f4c81; color: white;">
+    <p style="margin: 0; flex: 1 1 300px; text-align: center;">
+        &copy; 2026 Smart Student Management System
+    </p>
+    <p style="margin: 0; flex: 1 1 300px; text-align: center;">
+        Developed By:
+        <code><b><a href="https://www.linkedin.com" style="text-decoration: underline; color: #ffffff;">Sayan Kundu</a></b></code>
     </p>
 </footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var toggle = document.querySelector(".teacher-nav-toggle");
+    var nav = document.getElementById("teacher-nav");
+    if (!toggle || !nav) return;
+
+    toggle.addEventListener("click", function () {
+        var isOpen = nav.classList.toggle("open");
+        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+});
+</script>
 
 </body>
 </html>
