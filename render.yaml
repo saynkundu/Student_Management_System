@@ -16,6 +16,8 @@ services:
         value: "4"
       - key: DEBUG
         value: "False"
+      - key: PYTHON_VERSION
+        value: "3.11.6"
 
 databases:
   - name: ssmsdb
