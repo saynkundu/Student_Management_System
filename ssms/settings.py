@@ -1,9 +1,10 @@
-"""
+﻿"""
 Django settings for ssms project.
 """
 
 from pathlib import Path
 import os
+import dj_database_url
 try:
     from dotenv import load_dotenv
 except ImportError:
@@ -47,6 +48,13 @@ if not CSRF_TRUSTED_ORIGINS:
     ]
 
 
+RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_EXTERNAL_HOSTNAME:
+    if RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    render_origin = f"https://{RENDER_EXTERNAL_HOSTNAME}"
+    if render_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_origin)
 # --------------------------------------------------
 # APPLICATIONS
 # --------------------------------------------------
@@ -58,7 +66,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'storages',   # ✅ added for R2
+    'storages',   # âœ… added for R2
 
     'ssmsapp',
     'django_extensions',
@@ -109,13 +117,12 @@ WSGI_APPLICATION = 'ssms.wsgi.application'
 # DATABASE
 # --------------------------------------------------
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        ssl_require=not DEBUG,
+    )
 }
-
-
 # --------------------------------------------------
 # PASSWORD VALIDATION
 # --------------------------------------------------
@@ -209,4 +216,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # --------------------------------------------------
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+
+
 

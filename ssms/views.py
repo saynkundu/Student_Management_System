@@ -1132,8 +1132,12 @@ def generate_exam_with_ai(request, dept_year_subject_id):
         except urllib.error.HTTPError as e:
             last_error = _format_ai_http_error(e.read().decode("utf-8", errors="ignore"))
             continue
-        except Exception:
-            last_error = "Failed to contact AI service."
+        except urllib.error.URLError as e:
+            reason = getattr(e, "reason", None)
+            last_error = f"Network error while contacting AI service: {reason or e}"
+            continue
+        except Exception as e:
+            last_error = f"Failed to contact AI service: {e}"
             continue
 
     if not data:

@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: ssms
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn ssms.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ssmsdb
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: "4"
+      - key: DEBUG
+        value: "False"
+
+databases:
+  - name: ssmsdb
+    plan: free
+    databaseName: ssms
+    user: ssms
