@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     buildCommand: "./build.sh"
-    startCommand: "gunicorn ssms.wsgi:application --bind 0.0.0.0:$PORT"
+    startCommand: "bash -c \"python manage.py migrate && gunicorn ssms.wsgi:application --bind 0.0.0.0:$PORT\""
     envVars:
       - key: DATABASE_URL
         fromDatabase:
